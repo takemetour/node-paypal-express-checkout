@@ -117,6 +117,7 @@ Paypal.prototype.pay = function(invoiceNumber, amount, description, currency, re
 	params.cancelUrl = self.cancelUrl;
 	params.NOSHIPPING = requireAddress ? 0 : 1;
 	params.ALLOWNOTE = 1;
+	params.LOGIMG = 'https://d2ohnhq02bju9i.cloudfront.net/static/images/logo.png';
 	params.METHOD = 'SetExpressCheckout';
 
 	self.request(self.url, 'POST', params, function(err, data) {
