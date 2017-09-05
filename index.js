@@ -81,6 +81,8 @@ Paypal.prototype.detail = function(token, payer, callback) {
 		params.PAYMENTREQUEST_0_CURRENCYCODE = custom[2];
 		params.METHOD = 'DoExpressCheckoutPayment';
 
+		var _data = data;
+	
 		self.request(self.url, 'POST', params, function(err, data) {
 			if (err)
 				return callback(err, data);
@@ -89,6 +91,7 @@ Paypal.prototype.detail = function(token, payer, callback) {
 			data.PAYMENTSTATUS = data.PAYMENTINFO_0_PAYMENTSTATUS;
 			var is = (data.PAYMENTINFO_0_PAYMENTSTATUS || '').toLowerCase();
 			data.success = (data.ACK || 'failure').toLowerCase() === 'success' && (is === 'completed' || is === 'processed' || is === 'pending');
+			data.DESC = _data.DESC;
 			callback(null, data, custom[0], custom[1]);
 		});
 	});
