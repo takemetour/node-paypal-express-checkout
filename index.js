@@ -92,6 +92,8 @@ Paypal.prototype.detail = function(token, payer, callback) {
 			var is = (data.PAYMENTINFO_0_PAYMENTSTATUS || '').toLowerCase();
 			data.success = (data.ACK || 'failure').toLowerCase() === 'success' && (is === 'completed' || is === 'processed' || is === 'pending');
 			data.DESC = _data.DESC;
+			data.FIRSTNAME = _data.FIRSTNAME;
+			data.LASTNAME = _data.LASTNAME;
 			callback(null, data, custom[0], custom[1]);
 		});
 	});
