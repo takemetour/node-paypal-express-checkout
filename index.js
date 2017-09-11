@@ -37,6 +37,7 @@ function Paypal(username, password, signature, returnUrl, cancelUrl, debug) {
 	this.cancelUrl = cancelUrl;
 	this.url = 'https://' + (debug ? 'api-3t.sandbox.paypal.com' : 'api-3t.paypal.com') + '/nvp';
 	this.redirect = 'https://' + (debug ? 'www.sandbox.paypal.com/cgi-bin/webscr' : 'www.paypal.com/cgi-bin/webscr');
+	this.locale = '';
 };
 
 Paypal.prototype.params = function() {
@@ -125,15 +126,18 @@ Paypal.prototype.pay = function(invoiceNumber, amount, description, currency, re
 	params.LOGOIMG = 'https://d2ohnhq02bju9i.cloudfront.net/static/images/logo.png';
 	params.METHOD = 'SetExpressCheckout';
 
+	if (self.locale)
+		params.LOCALECODE = self.locale;
+
 	self.request(self.url, 'POST', params, function(err, data) {
 
 		if (err)
 			return callback(err, null);
 
 		if (data.ACK === 'Success')
-			return callback(null, self.redirect + '?cmd=_express-checkout&useraction=commit&token=' + data.TOKEN);
-
-		callback(new Error('ACK ' + data.ACK + ': ' + data.L_LONGMESSAGE0), null);
+			callback(null, self.redirect + '?cmd=_express-checkout&useraction=commit&token=' + data.TOKEN);
+		else
+			callback(new Error('ACK ' + data.ACK + ': ' + data.L_LONGMESSAGE0), null);
 	});
 
 	return self;
@@ -152,7 +156,6 @@ Paypal.prototype.request = function(url, method, data, callback) {
 	HEADERS['Content-Type'] = method === 'POST' ? 'application/x-www-form-urlencoded' : 'text/plain';
 	HEADERS['Content-Length'] = new Buffer(params).length;
 
-	var location = '';
 	var options = { protocol: uri.protocol, auth: uri.auth, method: method || 'GET', hostname: uri.hostname, port: uri.port, path: uri.path, agent: false, headers: HEADERS };
 
 	var response = function (res) {
